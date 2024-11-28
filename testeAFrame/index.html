@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste 2 A-frame</title>
+
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/1.7.2/aframe/build/aframe-ar.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        #interface {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: black;
+            z-index: 10;
+        }
+
+        input[type="text"],
+        button {
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+    </style>
+
+</head>
+
+<body style="margin: 0; overflow: hidden;">
+    <div id="interface">
+        <h1>Identifique o Elemento Eletrônico</h1>
+        <div id="pergunta"></div>
+        <input type="text" id="resposta" placeholder="Digite sua resposta" />
+        <button onclick="verificarResposta()">Enviar</button>
+        <p>Pontuação: <span id="pontuacao">0</span></p>
+    </div>
+
+    <a-scene embedded arjs>
+        <a-marker preset="hiro" id="marcador">
+            <a-entity id="eletronico" gltf-model="#elementoEletronico" position="0 0 0" scale="0.01 0.01 0.01"
+                visible="false"></a-entity>
+        </a-marker>
+
+        <a-assets>
+            <a-asset-item id="elementoEletronico" src="glb/esp32.glb"></a-asset-item>
+        </a-assets>
+
+        <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+        let pontuacao = 0;
+        const perguntas = {
+            'esp32': 'Qual é o nome deste microcontrolador?',
+            'sensor': 'Qual é o nome deste sensor?',
+            'LDR': 'Qual é o nome deste componente da família dos resistores?'
+        };
+
+        document.querySelector('#marcador').addEventListener('markerFound', function () {
+            const elementoAtual = 'esp32';
+            document.querySelector('#eletronico').setAttribute('visible', 'true');
+            mostrarPergunta(elementoAtual);
+        });
+
+        function mostrarPergunta(elemento) {
+            const pergunta = perguntas[elemento];
+            document.querySelector('#pergunta').innerText = pergunta;
+        }
+
+        function verificarResposta() {
+            const resposta = document.querySelector('#resposta').value.toLowerCase();
+            const elementoAtual = 'esp32';
+            if (resposta === elementoAtual) {
+                pontuacao += 10;
+                alert('Resposta correta! Você ganhou 10 pontos.');
+            } else {
+                alert('Resposta errada. Tente novamente!');
+            }
+            atualizarPontuacao();
+            document.querySelector('#resposta').value = '';
+        }
+
+        function atualizarPontuacao() {
+            document.querySelector('#pontuacao').innerText = pontuacao;
+        }
+    </script>
+</body>
+
+</html>
